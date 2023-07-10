@@ -5,7 +5,8 @@ import * as http from 'http';
 export const runHttpServer = (port = 8181) => {
   const httpServer = http.createServer(function (req, res) {
     const __dirname = path.resolve(path.dirname(''));
-    const file_path = __dirname + (req.url === '/' ? '/front/index.html' : '/front' + req.url);
+    const file_path =
+      __dirname + (req.url === '/' ? '/front/index.html' : '/front' + req.url);
 
     fs.readFile(file_path, function (err, data) {
       if (err) {
@@ -18,11 +19,10 @@ export const runHttpServer = (port = 8181) => {
     });
   });
 
-
   return new Promise((res, rej) => {
     httpServer.listen(port, () => {
       res(port);
     });
     httpServer.on('error', rej);
   });
-}; 
+};
