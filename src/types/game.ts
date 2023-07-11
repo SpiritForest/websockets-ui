@@ -1,5 +1,51 @@
 import WebSocket from 'ws';
 
+export interface AttackMessage {
+  id: number;
+  type: MessageType;
+  data: {
+    x: number;
+    y: number;
+    gameId: number;
+    indexPlayer: number;
+  };
+}
+export interface RandomAttackMessage {
+  id: number;
+  type: MessageType;
+  data: {
+    gameId: number;
+    indexPlayer: number;
+  };
+}
+
+export interface AddShipsMessage {
+  id: number;
+  type: MessageType;
+  data: {
+    gameId: number;
+    ships: IShip[];
+    indexPlayer: number;
+  };
+}
+
+export interface RegistrationMessage {
+  id: 0;
+  type: MessageType;
+  data: {
+    name: string;
+    password: string;
+  };
+}
+
+export interface AddUserToRoomMessage {
+  id: number;
+  type: MessageType;
+  data: {
+    indexRoom: number;
+  };
+}
+
 export interface IUser {
   name: string;
   password: string;
@@ -37,6 +83,14 @@ export interface ResponseMessage {
   type: MessageType;
   data: string;
   id: number;
+}
+
+export interface Winners {
+  [key: string]: {
+    indexPlayer: number;
+    name: string;
+    wins: number;
+  };
 }
 
 export interface Room {
@@ -105,6 +159,7 @@ export interface IShip {
   length: number;
   type?: 'small' | 'medium' | 'large' | 'huge';
   checkDamageFromAttack: (x: number, y: number) => Damage;
+  isShipKilled: () => boolean;
 }
 
 export enum Damage {

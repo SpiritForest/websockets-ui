@@ -1,4 +1,4 @@
-import { Cell } from '../types/game';
+import { Cell, UsedCells, Message } from '../types/game';
 
 export const getRandomIntInclusive = (min: number, max: number) => {
   min = Math.ceil(min);
@@ -24,4 +24,27 @@ export const getRange = (start: number, end: number) => {
 
 export const getCellId = (cell: Cell): string => {
   return `${cell.position.x}${cell.position.y}`;
+};
+
+export const isCellPressed = (cell: Cell, usedCells: UsedCells) => {
+  const cellId = getCellId(cell);
+  const isCellAlreadyPressed = usedCells[cellId];
+
+  return !!isCellAlreadyPressed;
+};
+
+export const getCellFromCoordinates = (x: number, y: number): Cell => {
+  return {
+    position: {
+      x,
+      y,
+    },
+  };
+};
+
+export const convertMessageToString = (message: Message): string => {
+  return JSON.stringify({
+    ...message,
+    data: JSON.stringify(message.data),
+  });
 };

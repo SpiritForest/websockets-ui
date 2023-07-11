@@ -1,4 +1,4 @@
-import { IUser, Room, Game, IShip } from '../types/game';
+import { IUser, Room, Game, IShip, Winners } from '../types/game';
 import { Ship } from '../entities/Ship';
 
 export class DB {
@@ -6,11 +6,13 @@ export class DB {
   users: IUser[];
   rooms: Room[];
   games: Game[];
+  winners: Winners;
 
   constructor() {
     this.users = [];
     this.rooms = [];
     this.games = [];
+    this.winners = {};
   }
 
   static getInstance() {
@@ -19,6 +21,10 @@ export class DB {
     }
 
     return DB.instance;
+  }
+
+  closeRoom(indexRooom: number) {
+    this.rooms = this.rooms.filter((room) => room.roomId !== indexRooom);
   }
 
   addUser(user: IUser) {
@@ -31,8 +37,6 @@ export class DB {
     return {
       name: user.name,
       index,
-      error: false,
-      errorText: '',
     };
   }
 
@@ -75,8 +79,8 @@ export class DB {
     return isPlayersAddedShips;
   }
 
-  findGameBy(id: number | undefined): Game | undefined {
-    return this.games.find((game) => game.idGame === id);
+  findGameBy(id: number): Game {
+    return this.games[id];
   }
 
   createGame() {
@@ -105,9 +109,9 @@ export class DB {
     );
   }
 
-  addUserToRoom(indexUser: number, indexRoom: number): Room | undefined {
+  addUserToRoom(indexPlayer: number, indexRoom: number): Room | undefined {
     const room = this.rooms.find((room) => room.roomId === indexRoom);
-    const user = this.users.find((user) => user.index === indexUser);
+    const user = this.users.find((user) => user.index === indexPlayer);
 
     if (room && user) {
       room.roomUsers.push({
@@ -115,6 +119,25 @@ export class DB {
         index: user.index || 0,
       });
       return room;
+    }
+  }
+
+  updateWinner(indexPlayer: number) {
+    const user = this.users.find((user) => user.index === indexPlayer);
+
+    if (user) {
+      const isUserWonInThePast = !!this.winners[user.name];
+      if (isUserWonInThePast) {
+        this.winners[user.name].wins += 1;
+      } else {
+        this.winners[user.name] = {
+          indexPlayer,
+          name: user.name,
+          wins: 1,
+        };
+      }
+
+      return Object.values(this.winners).sort((a, b) => b.wins - a.wins);
     }
   }
 }
